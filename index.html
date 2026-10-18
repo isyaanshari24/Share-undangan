@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kirim Undangan Nikah</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f9f4ee;
+    --warm: #e8ddd0;
+    --gold: #b8975a;
+    --gold-light: #d4b483;
+    --dark: #2c2418;
+    --text: #4a3f32;
+    --muted: #8a7d6e;
+    --green-wa: #25D366;
+    --green-wa-dark: #128C7E;
+    --shadow: 0 4px 24px rgba(44,36,24,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 56px 0;
+    color: var(--text);
+  }
+  .header {
+    width: 100%;
+    background: linear-gradient(135deg, #2c2418 0%, #4a3525 60%, #6b4c30 100%);
+    padding: 36px 24px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(184,151,90,0.18) 0%, transparent 70%);
+  }
+  .header-bismillah {
+    font-size: 18px;
+    color: var(--gold-light);
+    opacity: 0.85;
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .header h1 span { color: var(--gold-light); }
+  .header-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 24px 20px;
+    margin: 20px 16px 0;
+    width: calc(100% - 32px);
+    max-width: 480px;
+    border: 1px solid rgba(184,151,90,0.12);
+    animation: fadeInUp 0.35s ease both;
+  }
+  .card:nth-child(2) { animation-delay: 0.05s; }
+  .card:nth-child(3) { animation-delay: 0.10s; }
+  .card:nth-child(4) { animation-delay: 0.15s; }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .input-wrap { position: relative; }
+  .input-wrap input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    border: 1.5px solid var(--warm);
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--dark);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .input-wrap input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(184,151,90,0.13);
+    background: #fff;
+  }
+  .input-wrap input::placeholder { color: var(--muted); }
+  .input-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    pointer-events: none;
+  }
+  .partner-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 16px 0 10px;
+  }
+  .toggle-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .toggle-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--warm);
+    background: #fff;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .toggle-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(184,151,90,0.28);
+  }
+  .keluarga-row {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(184,151,90,0.07);
+    border-radius: 10px;
+    border: 1px dashed rgba(184,151,90,0.35);
+  }
+  .keluarga-row.visible { display: flex; }
+  .keluarga-row label {
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+  .keluarga-row input[type=checkbox] {
+    accent-color: var(--gold);
+    width: 17px; height: 17px;
+    cursor: pointer;
+  }
+  .preview-bubble {
+    background: linear-gradient(135deg, #e7fbe9 0%, #d9f8de 100%);
+    border-radius: 4px 16px 16px 16px;
+    padding: 16px 15px;
+    border: 1px solid rgba(37,211,102,0.18);
+    position: relative;
+  }
+  .preview-bubble::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -8px;
+    width: 0; height: 0;
+    border-top: 10px solid #d9f8de;
+    border-left: 8px solid transparent;
+  }
+  .preview-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(37,211,102,0.2);
+  }
+  .preview-header-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-wa), var(--green-wa-dark));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .preview-header-name { font-size: 13px; font-weight: 600; color: var(--green-wa-dark); }
+  .preview-header-time { margin-left: auto; font-size: 10px; color: var(--muted); }
+  .preview-text {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #1a1a1a;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .preview-text .hl { color: var(--green-wa-dark); font-weight: 600; }
+  .preview-text .hl-link { color: #0a7abf; text-decoration: underline; word-break: break-all; }
+  .preview-tick { text-align: right; font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+  /* Dua tombol */
+  .btn-row { display: flex; gap: 10px; }
+
+  .btn-copy {
+    flex: 1;
+    padding: 15px 10px;
+    background: #fff;
+    color: var(--gold);
+    border: 2px solid var(--gold);
+    border-radius: 14px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-copy:active { background: rgba(184,151,90,0.08); transform: scale(0.97); }
+  .btn-copy.copied { background: var(--gold); color: #fff; }
+  .btn-copy:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-share {
+    flex: 2;
+    padding: 15px 10px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(37,211,102,0.28);
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    position: relative; overflow: hidden;
+  }
+  .btn-share:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(37,211,102,0.2); }
+  .btn-share:disabled { background: var(--warm); color: var(--muted); box-shadow: none; cursor: not-allowed; }
+
+  .hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+  .hint span { color: var(--green-wa-dark); font-weight: 500; }
+
+  /* Toast notif */
+  .toast {
+    position: fixed;
+    bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1a1a1a;
+    color: #fff;
+    padding: 11px 22px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    z-index: 999;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), opacity 0.3s;
+    opacity: 0;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  .footer {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .footer em { color: var(--gold); font-style: normal; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-bismillah">Aplikasi Share Undangan</div>
+  <h1>Kirim Undangan Pernikahan <span>Fadly & Kamalia</span></h1>
+  <div class="header-sub">Isi nama · Pilih pasangan · Share ke WA</div>
+</div>
+
+<!-- Card 1: Input -->
+<div class="card">
+  <div class="section-label">👤 Nama Tamu</div>
+  <div class="input-wrap">
+    <span class="input-icon">✍️</span>
+    <input type="text" id="namaTamu"
+           placeholder="Contoh: Budi Santoso"
+           oninput="updatePreview()"
+           autocomplete="off" />
+  </div>
+  <div class="partner-label">Pilih pasangan / keluarga:</div>
+  <div class="toggle-group">
+    <button class="toggle-btn active" onclick="setPartner(this, '& partner')">& Partner</button>
+    <button class="toggle-btn" onclick="setPartner(this, '& suami')">& Suami</button>
+    <button class="toggle-btn" onclick="setPartner(this, '& istri')">& Istri</button>
+    <button class="toggle-btn" onclick="setPartner(this, '')">Sendiri</button>
+  </div>
+  <div class="keluarga-row" id="keluargaRow">
+    <input type="checkbox" id="keluargaCheck" onchange="updatePreview()" />
+    <label for="keluargaCheck">Tambahkan <strong>sekeluarga</strong></label>
+  </div>
+</div>
+
+<!-- Card 2: Preview -->
+<div class="card">
+  <div class="section-label">📨 Preview Pesan WA</div>
+  <div class="preview-bubble">
+    <div class="preview-header">
+      <div class="preview-header-dot">💍</div>
+      <div class="preview-header-name">Kamu</div>
+      <div class="preview-header-time" id="jamPreview">09:00</div>
+    </div>
+    <div class="preview-text" id="previewText">Isi nama tamu di atas untuk melihat preview pesan...</div>
+    <div class="preview-tick">✓✓</div>
+  </div>
+</div>
+
+<!-- Card 3: Tombol -->
+<div class="card">
+  <div class="btn-row">
+    <!-- Tombol Copy -->
+    <button class="btn-copy" id="btnCopy" onclick="copyPesan()" disabled>
+      📋 Copy
+    </button>
+   
+  </div>
+  <div class="hint" id="hintText">Isi nama tamu terlebih dahulu</div>
+</div>
+
+<div class="footer">Dibuat dengan ❤️ · <em>Undangan Pernikahan</em></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let selectedPartner = '& partner';
+  let pesanFinal = '';
+  const BASE_URL = 'https://isyaanshari24.github.io/undanganfadly-kamalia/?to=';
+
+  function updateJam() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('jamPreview').textContent = h + ':' + m;
+  }
+  updateJam();
+  setInterval(updateJam, 30000);
+
+  function setPartner(btn, val) {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedPartner = val;
+    const row = document.getElementById('keluargaRow');
+    if (val !== '') {
+      row.classList.add('visible');
+    } else {
+      row.classList.remove('visible');
+      document.getElementById('keluargaCheck').checked = false;
+    }
+    updatePreview();
+  }
+
+  function buildNamaLengkap() {
+    const nama = document.getElementById('namaTamu').value.trim();
+    if (!nama) return '';
+    let n = nama;
+    if (selectedPartner) n += ' ' + selectedPartner;
+    if (document.getElementById('keluargaCheck').checked && selectedPartner) n += ' sekeluarga';
+    return n;
+  }
+
+  function buildPesan(namaLengkap) {
+    const sapaan = namaLengkap || 'Bapak/Ibu/Saudara/i';
+    const link = BASE_URL + (namaLengkap ? encodeURIComponent(namaLengkap) : 'Tamu+Undangan');
+    return `Assalamu'alaikum Wr. Wb.\n\nDengan penuh rasa hormat, kami bermaksud mengundang ${sapaan} untuk berkenan hadir pada acara pernikahan kami.\n\nBerikut kami lampirkan undangan digital melalui tautan berikut:\n${link}\n\nKehadiran serta doa restu dari ${sapaan} akan menjadi kebahagiaan dan kehormatan bagi kami.\n\nAtas perhatian dan kehadirannya, kami ucapkan terima kasih.\n\nWassalamu'alaikum Wr. Wb.`;
+  }
+
+  function updatePreview() {
+    const namaLengkap = buildNamaLengkap();
+    pesanFinal = buildPesan(namaLengkap);
+    const previewEl = document.getElementById('previewText');
+    const btnCopy = document.getElementById('btnCopy');
+    const hint = document.getElementById('hintText');
+
+    if (namaLengkap) {
+      const link = BASE_URL + encodeURIComponent(namaLengkap);
+      let html = pesanFinal
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const sapaanEsc = namaLengkap.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      html = html.replace(new RegExp(sapaanEsc, 'g'), `<span class="hl">${namaLengkap}</span>`);
+      const linkEsc = link.replace(/&/g,'&amp;');
+      const linkEsc2 = linkEsc.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      html = html.replace(new RegExp(linkEsc2, 'g'), `<span class="hl-link">${linkEsc}</span>`);
+      previewEl.innerHTML = html;
+      btnCopy.disabled = false;
+      hint.innerHTML = `Pesan siap disalin ✓`;
+    } else {
+      previewEl.textContent = 'Isi nama tamu di atas untuk melihat preview pesan...';
+      btnCopy.disabled = true;
+      hint.innerHTML = 'Isi nama tamu terlebih dahulu';
+    }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  function copyPesan() {
+    if (!pesanFinal) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(pesanFinal).then(() => {
+        showToast('✅ Pesan berhasil disalin!');
+        const btn = document.getElementById('btnCopy');
+        btn.textContent = '✅ Tersalin';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.innerHTML = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    } else {
+      // Fallback untuk WebView lama
+      const ta = document.createElement('textarea');
+      ta.value = pesanFinal;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('✅ Pesan berhasil disalin!');
+        const btn = document.getElementById('btnCopy');
+        btn.textContent = '✅ Tersalin';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.innerHTML = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+      } catch(e) {
+        showToast('❌ Gagal copy, coba manual');
+      }
+      document.body.removeChild(ta);
+    }
+  }
+
+  function shareWA() {
+    if (!pesanFinal) return;
+    const encoded = encodeURIComponent(pesanFinal);
+
+    // Coba Web Share API dulu (paling native, muncul share sheet Android)
+    if (navigator.share) {
+      navigator.share({ text: pesanFinal })
+        .catch(() => bukaWA(encoded));
+      return;
+    }
+
+    bukaWA(encoded);
+  }
+
+  function bukaWA(encoded) {
+    // Pakai wa.me — paling universal
+    // Di dalam APK WebView, jika gagal, user bisa pakai tombol Copy lalu buka WA manual
+    const url = 'https://wa.me/?text=' + encoded;
+    window.location.href = url;
+  }
+
+  updatePreview();
+</script>
+</body>
+</html>
